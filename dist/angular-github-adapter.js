@@ -330,6 +330,17 @@ angular.module('pascalprecht.github-adapter').factory('$githubRepository', [
             });
             return deferred.promise;
           },
+          delete: function (branch, path) {
+            var deferred = $q.defer();
+            repo.delete(branch, path, function (err) {
+              if (err) {
+                deferred.reject(err);
+              } else {
+                deferred.resolve();
+              }
+            });
+            return deferred.promise;
+          },
           show: function () {
             var deferred = $q.defer();
             repo.show(function (err, repo) {

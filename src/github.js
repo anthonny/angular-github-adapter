@@ -5,7 +5,14 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
   var $username,
       $password,
       $authType,
-      $token;
+      $token,
+      $OAUTH = 'oauth',
+      $BASIC = 'basic';
+
+  // Constant for authentication
+
+  this.OAUTH = $OAUTH;
+  this.BASIC = $BASIC;
 
   this.username = function (name) {
     if (!name) {
@@ -34,7 +41,7 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
     $token = token;
   };
 
-  this.$get = ['$q', '$githubRepository', '$githubUser', '$githubGist', function ($q, $githubRepository, $githubUser, $githubGist) {
+  this.$get = ['$q', '$githubRepository', '$githubUser', '$githubGist', function ($q, $githubRepository, $githubUser, $githubGist, $githubAuthorization) {
 
     var config = {};
     if ($username && $password) {
@@ -51,12 +58,23 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
 
     var $github = {};
 
-    $github.setCreds = function (username, password, authType) {
-      github = new Github({
-        username: username,
-        password: password,
-        auth: authType
-      });
+    $github.setCreds = function (authType, username, password) {
+      var credentials;
+
+      if (authType === $BASIC) {
+        credentials = {
+          username: username,
+          password: password,
+          auth: authType
+        };
+      } else {
+        credentials = {
+          token: username,
+          auth: authType
+        };
+      }
+
+      github = new Github(credentials);
     };
 
     $github.getRepo = function (username, reponame) {
@@ -69,6 +87,10 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
 
     $github.getGist = function (id) {
       return $q.when($githubGist(github.getGist(id)));
+    };
+
+    $github.getAuthorization = function () {
+      return $q.when($githubAuthorization(github.getAuthorization()));
     };
 
     return $github;

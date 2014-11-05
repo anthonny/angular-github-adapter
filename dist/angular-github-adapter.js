@@ -33,6 +33,7 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
     '$githubRepository',
     '$githubUser',
     '$githubGist',
+    '$githubAuthorization',
     function ($q, $githubRepository, $githubUser, $githubGist, $githubAuthorization) {
       var config = {};
       if ($username && $password) {

@@ -41,7 +41,7 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
     $token = token;
   };
 
-  this.$get = ['$q', '$githubRepository', '$githubUser', '$githubGist', function ($q, $githubRepository, $githubUser, $githubGist, $githubAuthorization) {
+  this.$get = ['$q', '$githubRepository', '$githubUser', '$githubGist', '$githubAuthorization', function ($q, $githubRepository, $githubUser, $githubGist, $githubAuthorization) {
 
     var config = {};
     if ($username && $password) {

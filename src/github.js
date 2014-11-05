@@ -9,11 +9,6 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
       $OAUTH = 'oauth',
       $BASIC = 'basic';
 
-  // Constant for authentication
-
-  this.OAUTH = $OAUTH;
-  this.BASIC = $BASIC;
-
   this.username = function (name) {
     if (!name) {
       return $username;
@@ -57,6 +52,11 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
     var github = new Github(config);
 
     var $github = {};
+
+
+    // Constant for authentication
+    $github.OAUTH = $OAUTH;
+    $github.BASIC = $BASIC;
 
     $github.setCreds = function (authType, username, password) {
       var credentials;

@@ -1,6 +1,9 @@
 angular.module('pascalprecht.github-adapter', ['ng']);
 angular.module('pascalprecht.github-adapter').provider('$github', function () {
-  var $username, $password, $authType, $token;
+  var $username, $password, $authType, $token, $OAUTH = 'oauth', $BASIC = 'basic';
+  // Constant for authentication
+  this.OAUTH = $OAUTH;
+  this.BASIC = $BASIC;
   this.username = function (name) {
     if (!name) {
       return $username;
@@ -30,7 +33,7 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
     '$githubRepository',
     '$githubUser',
     '$githubGist',
-    function ($q, $githubRepository, $githubUser, $githubGist) {
+    function ($q, $githubRepository, $githubUser, $githubGist, $githubAuthorization) {
       var config = {};
       if ($username && $password) {
         config = {
@@ -44,12 +47,21 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
       }
       var github = new Github(config);
       var $github = {};
-      $github.setCreds = function (username, password, authType) {
-        github = new Github({
-          username: username,
-          password: password,
-          auth: authType
-        });
+      $github.setCreds = function (authType, username, password) {
+        var credentials;
+        if (authType === $BASIC) {
+          credentials = {
+            username: username,
+            password: password,
+            auth: authType
+          };
+        } else {
+          credentials = {
+            token: username,
+            auth: authType
+          };
+        }
+        github = new Github(credentials);
       };
       $github.getRepo = function (username, reponame) {
         return $q.when($githubRepository(github.getRepo(username, reponame)));
@@ -60,10 +72,45 @@ angular.module('pascalprecht.github-adapter').provider('$github', function () {
       $github.getGist = function (id) {
         return $q.when($githubGist(github.getGist(id)));
       };
+      $github.getAuthorization = function () {
+        return $q.when($githubAuthorization(github.getAuthorization()));
+      };
       return $github;
     }
   ];
 });
+angular.module('pascalprecht.github-adapter').factory('$githubAuthorization', [
+  '$q',
+  function ($q) {
+    return function (authorization) {
+      var authorizationPromiseAdapter = {
+          create: function (options) {
+            var deferred = $q.defer();
+            authorization.create(options, function (err, res) {
+              if (err) {
+                deferred.reject(err);
+              } else {
+                deferred.resolve(res);
+              }
+            });
+            return deferred.promise;
+          },
+          list: function () {
+            var deferred = $q.defer();
+            authorization.list(function (err, res) {
+              if (err) {
+                deferred.reject(err);
+              } else {
+                deferred.resolve(res);
+              }
+            });
+            return deferred.promise;
+          }
+        };
+      return authorizationPromiseAdapter;
+    };
+  }
+]);
 /*jslint es5: true */
 angular.module('pascalprecht.github-adapter').factory('$githubGist', [
   '$q',

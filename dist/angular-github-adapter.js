@@ -432,6 +432,17 @@ angular.module('pascalprecht.github-adapter').factory('$githubRepository', [
               }
             });
             return deferred.promise;
+          },
+          writeAll: function (branch, files) {
+            var deferred = $q.defer();
+            repo.writeAll(branch, files, function (err) {
+              if (err) {
+                deferred.reject(err);
+              } else {
+                deferred.resolve();
+              }
+            });
+            return deferred.promise;
           }
         };
       return repositoryPromiseAdapter;

@@ -422,26 +422,26 @@ angular.module('pascalprecht.github-adapter').factory('$githubRepository', [
             });
             return deferred.promise;
           },
-          write: function (branch, path, content, message) {
+          write: function (branch, path, content, message, sha) {
             var deferred = $q.defer();
-            repo.write(branch, path, content, message, function (err) {
+            repo.write(branch, path, content, message, function (err, commit) {
               if (err) {
                 deferred.reject(err);
               } else {
-                deferred.resolve();
+                deferred.resolve(commit);
               }
-            });
+            }, sha);
             return deferred.promise;
           },
-          writeAll: function (branch, files) {
+          writeAll: function (branch, files, sha) {
             var deferred = $q.defer();
-            repo.writeAll(branch, files, function (err) {
+            repo.writeAll(branch, files, function (err, commit) {
               if (err) {
                 deferred.reject(err);
               } else {
-                deferred.resolve();
+                deferred.resolve(commit);
               }
-            });
+            }, sha);
             return deferred.promise;
           }
         };
